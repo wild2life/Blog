@@ -1,21 +1,22 @@
 module.exports = {
   title: 'Yolo',
   base: '/blog/',
+  head: [
+    [
+      'meta',
+      {
+        name: 'referrer',
+        content: 'no-referrer'
+      }
+    ]
+  ],
   themeConfig: {
-    // docsRepo: 'zhangfuling/zhangfuling.github.io',
-    // docsDir: 'docs',
-    // docsBranch: 'docs',
-    // editLinks: true,
-    // head: [
-    //   [
-    //     'meta',
-    //     {
-    //       name: 'referrer',
-    //       content: 'no-referrer'
-    //   ]
-    //     }
-    // ],
-    // repo: 'codexu/x-build',
+    repo: 'SetoInlandSea/blog',
+    repoLabel: 'GitHub',
+    docsDir: 'docs',
+    docsBranch: 'docs',
+    editLinks: true,
+    editLinkText: '编辑',
     nav: [
       { text: '计网', link: '/internet/计算机网络简史' },
       { text: '框架', link: '/frame/' },
