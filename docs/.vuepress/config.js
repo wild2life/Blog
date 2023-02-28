@@ -43,9 +43,10 @@ module.exports = {
           ['/frame/vue/大屏适配', '大屏适配'],
           ['/frame/vue/vue3.0项目工程环境', 'vue3.0项目工程环境'],
           ['/frame/vue/vue3', 'vue3'],
+          ['/frame/vue/大文件上传', '大文件上传'],
           ['/frame/react/', 'react'],
-          ['/frame/other/SSR', 'ssr'],
           ['/frame/other/nuxt', 'nuxt'],
+          ['/frame/other/electron', 'electron'],
           ['/frame/常用的方法', '常用的方法'],
           ['/frame/字符串技巧', '字符串技巧'],
           ['/frame/黑魔法', '黑魔法']
@@ -62,6 +63,7 @@ module.exports = {
           ['/utils/npm发布', 'npm发布'],
           ['/utils/shell', 'shell'],
           ['/utils/前端工具', '前端工具'],
+          ['/utils/webpack', 'webpack'],
         ]
       },
       {
@@ -76,9 +78,21 @@ module.exports = {
         title: '面试',
         collapsable: false,
         children: [
-          ['/interview/内存管理', '内存管理'],
-          ['/interview/异步', '异步'],
-          ['/interview/JavaScript如何工作', 'JavaScript如何工作'],
+          ['/interview/VDOM', 'VDOM'],
+          ['/interview/js/内存管理', '内存管理'],
+          ['/interview/js/异步', '异步'],
+          ['/interview/js/JavaScript如何工作', 'JavaScript如何工作'],
+          ['/interview/js/JS中的栈内存堆内存', 'JS中的栈内存堆内存'],
+          ['/interview/js/debounce', 'debounce'],
+          ['/interview/js/ts', 'ts'],
+        ]
+      },
+      {
+        title: '分享',
+        collapsable: false,
+        children: [
+          ['/share/算法', '算法'],
+          ['/share/干爆前端', '干爆前端']
         ]
       },
     ]
