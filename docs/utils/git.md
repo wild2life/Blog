@@ -1,11 +1,51 @@
-### [项目中常用的git](https://juejin.cn/post/6974184935804534815)
+## 配置 Git 的用户名和邮箱
+```
 git config user.name 'username1' 
 git config user.email test1@qq.com
-### 修改最近一次提交的作者
+```
+
+## git add
+```
+# 添加某个文件到暂存区，后面可以跟多个文件，以空格区分
+git add xxx
+# 添加当前更改的所有文件到暂存区。
+git add .
+```
+
+## git commit
+```
+# 提交暂存的更改，会新开编辑器进行编辑
+git commit 
+# 提交暂存的更改，并记录下备注
+git commit -m "you message"
+# 等同于 git add . && git commit -m
+git commit -am
+# 对最近一次的提交的信息进行修改,此操作会修改commit的hash值
+git commit --amend
+```
+
+## git pull
+```
+# 从远程仓库拉取代码并合并到本地，可简写为 git pull 等同于 git fetch && git merge 
+git pull <远程主机名> <远程分支名>:<本地分支名>
+# 使用rebase的模式进行合并
+git pull --rebase <远程主机名> <远程分支名>:<本地分支名>
+```
+
+## git fetch
+与 git pull 不同的是 git fetch 操作仅仅只会拉取远程的更改，不会自动进行 merge 操作。对你当前的代码没有影响
+```
+# 获取远程仓库特定分支的更新
+git fetch <远程主机名> <分支名>
+# 获取远程仓库所有分支的更新
+git fetch --all
+```
+
+## 修改最近一次提交的作者
 ```javascript
  git commit --amend --reset-author
 ```
-### 撤销add
+## 撤销add
 **git add 添加了多余文件** 
 git add .  表示当前目录所有文件，不小心就会提交其他文件
 git add 如果添加了错误的文件的话
@@ -14,39 +54,68 @@ git status 先看一下add 中的文件
 git reset HEAD 如果后面什么都不跟的话 就是上一次add 里面的全部撤销了 
 git reset HEAD XXX.py 就是对某个py文件进行撤销了
 git reset HEAD file  即使对file文件夹进行撤销
-### 如何删除某一个commit
-`git log`
-`Git rebase -i commitId`(想删除的前一次提交的commitId)
+## 如何删除某一个commit
+```
+git log
+
+Git rebase -i commitId
+```
+::: tip
+想删除的前一次提交的commitId
 Pick 改成drop
 保存退出 Esc:wq
-`git push origin master --force`
-### 如何撤销上一次commit
-`git reset --hard HEAD~1`(取消上一次commit,加上--hard则不保留当前更改)
-`git push --force`
-### 如何撤销git reset --hard
-`git reflog`
-`git reset --hard commitId`(想找回的提交的commitId)
-### 暂时存储
-`git stash`
+:::
 
-- 查看临时存储
-`git stash list``git stash apply`(默认恢复最近的一次)
-- 指定恢复
-`git stash apply stash@{2}`
-### 远程覆盖本地
+```
+git push origin master --force
+```
+## 如何撤销上一次commit
+::: tip
+取消上一次commit,加上--hard则不保留当前更改
+:::
+```
+git reset --hard HEAD~1
+```
+```
+git push --force
+```
+## 如何撤销git reset --hard
+```
+git reflog
+```
+
+```
+git reset --hard commitId
+```
+
+## 暂时存储
+```
+git stash //把本地的改动暂存起来
+git stash save "message" 执行存储时，添加备注，方便查找。
+git stash pop // 应用最近一次暂存的修改，并删除暂存的记录
+git stash apply  // 应用某个存储,但不会把存储从存储列表中删除，默认使用第一个存储,即 stash@{0}，如果要使用其他个，git stash apply stash@{$num} 。
+git stash list // 查看 stash 有哪些存储
+git stash clear // 删除所有缓存的 stash
+```
+
+## 远程覆盖本地
 ```
 $ git fetch --all
 $ git reset --hard origin/master 
 $ git pull
 ```
-### 本地覆盖远程
+## 本地覆盖远程
+```
 git push origin master -f
-### 修改commit信息
+```
+## 修改commit信息
+::: tip
+‘C’进入VIM编辑状态，修改完成。esc退出编辑，两次大写字母'Z'保存并退出
+:::
 ```
 $ git commit --amend
-‘C’进入VIM编辑状态，修改完成。esc退出编辑，两次大写字母'Z'保存并退出
 ```
-### github
+## github
 建立git仓库，cd到你的本地项目根目录下，执行git命令
 ```
 git init
@@ -81,7 +150,7 @@ git diff
 ```
 git diff --cached 或者 git diff --staged
 ```
-#### 移除文件
+## 移除文件
 要从已跟踪文件清单中移除
 ```
 git rm filename
@@ -94,7 +163,7 @@ git仓库中删除，工作区仍保留
 ```
 git rm --cached filename
 ```
-#### 移动文件
+## 移动文件
 ```
 git mv file to directory
 ```
@@ -108,8 +177,10 @@ $ mv README.md README
 $ git rm README.md
 $ git add README
 ```
-#### 查看历史
+## 查看历史
+```
 git log
+```
 
 - **-p** 显示每次提交的内容差异
 - **-2** 显示最近两次提交
@@ -118,7 +189,7 @@ git log
 ```
 git log --pretty=oneline
 ```
-#### 撤销
+## 撤销
 
 - 取消所有暂存的文件
 ```
@@ -142,7 +213,7 @@ $ git commit --amend
 ```
 git checkout -- filename
 ```
-#### 远程仓库
+## 远程仓库
 
 - 查看远程仓库
 ![](https://cdn.nlark.com/yuque/0/2020/png/292785/1607917245342-8c11739c-d421-4bab-a7ed-b0f45eef9dc9.png#height=184&id=Iu3le&originHeight=184&originWidth=692&originalType=binary&ratio=1&rotation=0&showTitle=false&status=done&style=none&title=&width=692)
@@ -184,23 +255,23 @@ git remote rename pb paul
 值得注意的是这同样也会修改你的远程分支名字。 那些过去引用 pb/master 的现在会引用 paul/master
 
 - 移除一个远程仓库
-git remote rm [remote-name]
-#### git别名
+```git remote rm [remote-name]```
+## git alias
 ```
 git config --global alias.co checkout
 ```
-### git 拉取远程分支到本地
+## git 拉取远程分支到本地
 1.把远程分支拉到本地
 `git fetch origin dev（dev为远程仓库的分支名）`
 2.在本地创建分支dev并切换到该分支
 `git checkout -b dev(本地分支名称)` origin/dev(远程分支名称)
 3.把某个分支上的内容都拉取到本地
 `git pull origin dev(远程分支名称)`
-### 将A分支上的commit 复制到B分支上
+## 将A分支上的commit 复制到B分支上
 方式一 cherry-pick 推荐
 
 - git checkout B
-- git cherry-pick <commit id>
+- git cherry-pick commitID
 
 方式二 rebase
  git rebase   [startpoint]   [endpoint]  --onto  [branchName]
@@ -209,46 +280,67 @@ git config --global alias.co checkout
 **git rebase ad85dc7 30510af --onto main**![image.png](https://cdn.nlark.com/yuque/0/2022/png/292785/1648102604823-825a9f71-4449-48dc-964e-d533d6392b05.png#clientId=u1ef2e941-ab25-4&from=paste&height=318&id=u23f372fe&name=image.png&originHeight=318&originWidth=930&originalType=binary&ratio=1&rotation=0&showTitle=false&size=90721&status=done&style=none&taskId=u0dba77c2-48d3-49c6-aa9b-f3fde4d0ad3&title=&width=930)
 所以，虽然此时HEAD所指向的内容正是我们所需要的，但是main分支是没有任何变化的，git只是将dev1-dev4部分的提交内容复制一份粘贴到了master所指向的提交后面，我们需要做的就是将main所指向的提交id设置为当前HEAD所指向的提交id就可以了，即:
 ![image.png](https://cdn.nlark.com/yuque/0/2022/png/292785/1648102767148-940b305a-2806-4577-aade-647d86a9c678.png#clientId=u1ef2e941-ab25-4&from=paste&height=299&id=iRlSf&name=image.png&originHeight=314&originWidth=798&originalType=binary&ratio=1&rotation=0&showTitle=false&size=102696&status=done&style=none&taskId=uec0585ab-ca7b-4c75-8029-a7e32700476&title=&width=760)
-### git——修改已经提交并push后的commit注释
+## 修改已经提交并push后的commit注释
 把代码push到远程后，发现commit的注释居然多了几个错别字，不行，必须改了！
 搜索了一些答案之后自己做了一个总结如下：
-①修改倒数第1次的commit
-指令：$ git rebase -i HEAD~1
-②修改pick为edit
-①回车后进入一个页面，
+- 修改倒数第1次的commit
+```
+$ git rebase -i HEAD~1
+```
+- 修改pick为edit
+- 回车后进入一个页面，
 按i进入编辑模式，
 将要修改的那一条的pick修改成edit，
-按esc退出编辑模式，输入:wq保存并退出
-③修改commit注释内容
-指令： $ git commit --amend
+按esc退出编辑模式，输入:wq保存并退出<br/>
+- 修改commit注释内容
+```
+git commit --amend
+```
 按i进入编辑模式，修改内容，退出编辑模式，输入:wq保存并退出
-④$ git rebase --continue
-⑤强制push
-$ git push --force github
+```
+git rebase --continue
+```
+- 强制push
+```
+git push --force github
+```
 
-### 撤销某次提交
+## 撤销某次提交
 
 1. 普通撤销
 
-   git revert commit-id 版本是叠加的  会生成一个commit记录（跟reset不一样）
+   ```git revert commit-id``` 版本是叠加的  会生成一个commit记录（跟reset不一样）
 ![image.png](https://cdn.nlark.com/yuque/0/2021/png/292785/1616150182838-d8528a81-e250-44e3-8bbd-2f287b422de2.png#height=56&id=BknrE&name=image.png&originHeight=57&originWidth=447&originalType=binary&ratio=1&rotation=0&showTitle=false&size=10859&status=done&style=none&title=&width=442)
 
 2. 撤销merge的commit
 
-   git revert commit-id -m 1
-### 删除分支
-#### 删除本地分支
-git branch -d your_branch
-#### 删除远程分支
-git push origin --delete your_branch
-#### 查看分支
+   ```git revert commit-id -m 1```
+## git branch
+```
+# 新建本地分支，但不切换
+git branch <branch-name> 
+# 查看本地分支
+git branch
+# 查看远程分支
+git branch -r
+# 查看本地和远程分支
 git branch -a
-#### 远程已经删除的分支 本地 git branch -a 还是能查看到
-git fetch origin --prune
-### 本地修改不想提交的情况下用stash暂存
+# 删除本地分支
+git branch -D <branch-nane>
+# 重新命名分支
+git branch -m <old-branch-name> <new-branch-name>
+# 删除远程分支
+git push origin --delete your_branch
+```
+### 远程已经删除的分支 本地 git branch -a 还是能查看到
+```git fetch origin --prune
+```
+## 本地修改不想提交的情况下用stash暂存
 
 暂存到本地
+```
 git stash save 'msg'
+```
 场景：A在dev分支开发新的功能，突然大佬说要优先改个别的问题。新功能没开发完，不想提交。怎么办？
 这个时候就可以用stash把更改暂存本地 本地工作区clean之后就可以随意切换分支了
 ![image.png](https://cdn.nlark.com/yuque/0/2021/png/292785/1621224060277-2b5cc94f-9496-48d0-97a6-fca3ee59ddb4.png#clientId=u09f03e4b-9868-4&from=paste&height=168&id=u3e9805a5&name=image.png&originHeight=335&originWidth=753&originalType=binary&ratio=1&rotation=0&showTitle=false&size=73049&status=done&style=none&taskId=u373077cb-0de8-447d-b07d-b6ec67593ec&title=&width=376.5)
@@ -267,10 +359,10 @@ git stash pop stash@{id}  不写stash@{id} 默认pop最近的一次
 git stash命令提供了参数用于缓存上面两种类型的文件。使用-u或者--include-untracked可以stash untracked文件。使用-a或者--all命令可以stash当前目录下的所有修改。
 至于git stash的其他命令建议参考Git manual。
 [https://www.cnblogs.com/tocy/p/git-stash-reference.html](https://www.cnblogs.com/tocy/p/git-stash-reference.html)
-### merge 某些文件
-git checkout branch_name file_url
+## merge 某些文件
+```git checkout branch_name file_url```
 
-### 多个commit合并成一个
+## 合并commit
 ![image.png](https://cdn.nlark.com/yuque/0/2022/png/292785/1648100941262-0a596426-4b04-4f36-b74b-bfeb2454c760.png#clientId=u1ef2e941-ab25-4&from=paste&height=284&id=u5b705155&name=image.png&originHeight=284&originWidth=1304&originalType=binary&ratio=1&rotation=0&showTitle=false&size=63198&status=done&style=none&taskId=ue39d5ed0-38fe-4d72-8f51-5a8e2a3ac0d&title=&width=1304)
 现在我们在测试分支上添加了五次提交，我们的目标是把最后四个提交合并为一个提交
 ```
@@ -285,3 +377,7 @@ exec：执行shell命令（缩写:x）
 drop：我要丢弃该commit（缩写:d）
 ```
 根据自己的需要修改注释 提交
+
+## git rebase 让你的提交记录更加清晰可读
+
+rebase 翻译为变基，他的作用和 merge 很相似，用于把一个分支的修改合并到当前分支上。[掘金](https://juejin.cn/post/6974184935804534815)

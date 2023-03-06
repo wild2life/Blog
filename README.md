@@ -1,3 +1,1 @@
-# zhangfuling.github.io
-
-wwwwwwwwwwwww
+https://setoinlandsea.github.io/blog/
