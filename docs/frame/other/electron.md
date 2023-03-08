@@ -20,3 +20,182 @@ C# GUI 工具： WinForm、WPF 等；
 虽然上述语言的性能不及 C/C++，但是它们的开发效率很高，因此在性能要求不高的情况下，这些软件包也能够满足大多数用户的需求。大家要铭记，开发 GUI 程序的目的是为了实现人机交互，提升设备或者 APP 软件的易用性，这是 GUI 程序的初衷。
 
 
+
+## 基本要求
+::: tip
+在使用Electron进行开发之前，您需要安装 Node.js。 我们建议您使用最新的LTS版本。
+:::
+
+> 注意 因为 Electron 将 Node.js 嵌入到其二进制文件中，你应用运行时的 Node.js 版本与你系统中运行的 Node.js 版本无关。
+
+## 创建应用程序
+
+### 使用脚手架创建
+```
+mkdir my-electron-app && cd my-electron-app
+npm init
+npm install --save-dev electron
+```
+init初始化命令会提示您在项目初始化配置中设置一些值 为本教程的目的，有几条规则需要遵循：
+- entry point 应为 main.js.
+- author 与 description 可为任意值，但对于应用打包是必填项。
+
+### 运行主进程
+
+任何 Electron 应用程序的入口都是 **main** 文件。 这个文件控制了主进程，它运行在一个完整的Node.js环境中，负责控制您应用的生命周期，显示原生界面，执行特殊操作并管理渲染器进程(稍后详细介绍)
+
+### 创建页面
+在可以为我们的应用创建窗口前，我们需要先创建加载进该窗口的内容。 在Electron中，各个窗口显示的内容可以是本地HTML文件，也可以是一个远程url。
+
+### 在窗口中打开您的页面
+将页面加载进应用窗口 需要两个模块
+- [app](https://www.electronjs.org/zh/docs/latest/api/app) 模块，它控制应用程序的事件生命周期。
+- [BrowserWindow](https://www.electronjs.org/zh/docs/latest/api/browser-window) 模块，它创建和管理应用程序窗口。
+```javascript
+// main.js
+const { app, BrowserWindow } = require('electron')
+const createWindow = () => {
+  const win = new BrowserWindow({
+    width: 800,
+    height: 600
+  })
+  win.loadFile('index.html')
+}
+```
+在 Electron 中，只有在 app 模块的 **ready** 事件被激发后才能创建浏览器窗口。 您可以通过使用 app.whenReady() API来监听此事件。 在whenReady()成功后调用createWindow()。
+```javascript
+app.whenReady().then(() => {
+  createWindow()
+})
+```
+
+### 管理窗口的生命周期
+#### 关闭所有窗口时退出应用 (Windows & Linux)
+在Windows和Linux上，关闭所有窗口通常会完全退出一个应用程序
+```javascript
+// 你需要监听 app 模块的 'window-all-closed' 事件。如果用户不是在 macOS(darwin) 上运行程序，则调用 app.quit()。
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') app.quit()
+})
+```
+#### 如果没有窗口打开则打开一个窗口 (macOS)
+当 Linux 和 Windows 应用在没有窗口打开时退出了，macOS 应用通常即使在没有打开任何窗口的情况下也继续运行，并且在没有窗口可用的情况下激活应用时会打开新的窗口。
+```javascript
+/*
+为了实现这一特性，监听 app 模块的 activate 事件。如果没有任何浏览器窗口是打开的，则调用 createWindow() 方法。
+因为窗口无法在 ready 事件前创建，你应当在你的应用初始化后仅监听 activate 事件。 通过在您现有的 whenReady() 回调中附上您的事件监听器来完成这个操作。
+*/
+app.whenReady().then(() => {
+  createWindow()
+
+  app.on('activate', () => {
+    if (BrowserWindow.getAllWindows().length === 0) createWindow()
+  })
+})
+```
+
+### 通过预加载脚本从渲染器访问Node.js
+输出Electron的版本号和它的依赖项到你的web页面上
+
+在主进程通过Node的全局 process 对象访问这个信息是微不足道的。 然而，你不能直接在主进程中编辑DOM，因为它无法访问渲染器 文档 上下文。 它们存在于完全不同的进程
+这是将 预加载 脚本连接到渲染器时派上用场的地方。 预加载脚本在渲染器进程加载之前加载，并有权访问两个 渲染器全局 (例如 window 和 document) 和 Node.js 环境
+
+### 额外：将功能添加到您的网页内容
+```
+对于与您的网页内容的任何交互，您想要将脚本添加到您的渲染器进程中。 由于渲染器运行在正常的 Web 环境中，因此您可以在 index.html 文件关闭 </body> 标签之前添加一个 <script> 标签，来包括您想要的任意脚本
+```
+总结
+- 我们启动了一个Node.js程序，并将Electron添加为依赖。
+
+- 我们创建了一个 main.js 脚本来运行我们的主要进程，它控制我们的应用程序 并且在 Node.js 环境中运行。 在此脚本中， 我们使用 Electron 的 app 和 BrowserWindow 模块来创建一个浏览器窗口，在一个单独的进程(渲染器)中显示网页内容。
+
+- 为了访问渲染器中的Node.js的某些功能，我们在 BrowserWindow 的构造函数上附加了一个预加载脚本。
+
+## 打包分发应用程序
+
+### update.electronjs.org
+Electron 官方在 [https://update.electronjs.org](https://update.electronjs.org) 上为**开源应用程序**提供了免费的自动更新服务。 使用它有以下几点要求：
+- 你的应用在 macOS 或 Windows 上运行
+- 你的应用有一个公开的 GitHub 仓库
+- 应用程序需要发布到 GitHub releases 中
+- 应用程序需要完成 签名
+
+### Publisher
+Electron Forge 的 [Publishers](https://www.electronforge.io/config/publishers) 插件可以自动将打包的应用程序分发到各种来源
+
+### 使用其他更新服务
+开发一个私有的 Electron 应用程序
+第一步：部署更新服务器
+根据你的需要，你可以从下方选择：
+
+- Hazel——用于私人或开源应用的更新服务器，可在 Vercel 上免费部署。 它从GitHub Releases中拉取更新文件，并且利用 GitHub CDN 的强大性能。
+- Nuts－同样使用GitHub Releases, 但得在磁盘上缓存应用程序更新并支持私有存储库.
+- electron-release-server – 提供一个用于处理发布的仪表板，并且不需要在GitHub上发布发布。
+- Nucleus – 一个由Atlassian维护的 Electron 应用程序的完整更新服务器。 支持多种应用程序和渠道; 使用静态文件存储来降低服务器成本.
+一旦您部署了更新服务器，您就可以编写您的应用代码，以使用 Electron 的 autoUpdater 模块接收和应用更新。
+
+第二步：在你的应用程序上接收更新
+首先，在您的主进程代码中导入所需模块
+```javascript
+const { app, autoUpdater, dialog } = require('electron')
+const server = 'https://your-deployment-url.com'
+const url = `${server}/update/${process.platform}/${app.getVersion()}`
+// 构建更新服务器的 URL 并通知 autoUpdater：
+autoUpdater.setFeedURL({ url })
+setInterval(() => {
+  autoUpdater.checkForUpdates() // 每分钟检查一次
+}, 60000)
+```
+第三步：当更新可用时通知用户
+```javascript
+autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
+  const dialogOpts = {
+    type: 'info',
+    buttons: ['Restart', 'Later'],
+    title: 'Application Update',
+    message: process.platform === 'win32' ? releaseNotes : releaseName,
+    detail:
+      'A new version has been downloaded. Restart the application to apply the updates.',
+  }
+
+  dialog.showMessageBox(dialogOpts).then((returnValue) => {
+    if (returnValue.response === 0) autoUpdater.quitAndInstall()
+  })
+})
+// 错误处理 错误日志输出到stderr
+autoUpdater.on('error', (message) => {
+  console.error('There was a problem updating the application')
+  console.error(message)
+})
+```
+## 检测更新程序代码
+至此我们有了一个通过 GitHub 发布的功能性发布系统， 我们现在需要告诉我们的 Electron 应用来下载更新，而且是每当新版本出现时都需要更新。 Electron 应用通过 [autoUpdater](https://www.electronjs.org/zh/docs/latest/api/auto-updater) 模块来实现此功能, 此模块可以从更新服务源中读取信息, 并检查是否有一个新版本可供下载.
+
+
+## Code signing
+代码签名是一种用来证明应用是由你创建的一种安全技术。
+::: tip
+在Windows系统中，如果程序没有代码签名证书，或者代码签名授信级别较低时，系统同样会将其列为可信程序，只是当用户运行该应用时，系统会显示安全提示。
+:::
+默认情况下，Windows 和 macOS 都会禁止未签名的应用的下载或运行
+
+### 认证
+## 发布
+应用上传到各个操作系统的应用分发平台（如 App Store）
+
+## Electron + Vue3
+Vue CLI Plugin Electron Builder基于Vue Cli的，因此项目的搭建非常方便
+```javascript
+npm i @vue/cli -g·············
+vue create electron-app
+```
+Vue CLI Plugin Electron Builder
+```javascript
+vue add electron-builder
+```
+启用项目
+```
+npm run electron:serve
+```
+
+electron主进程的代码放在了**background.js**
