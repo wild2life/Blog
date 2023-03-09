@@ -185,6 +185,10 @@ autoUpdater.on('error', (message) => {
 
 ## Electron + Vue3
 Vue CLI Plugin Electron Builder基于Vue Cli的，因此项目的搭建非常方便
+::: info
+vue-cli-plugin-electron-builder打包构建实际上用的是[electron-builder](https://www.electron.build/)
+不用再去安装一遍electron-builder了
+:::
 ```javascript
 npm i @vue/cli -g·············
 vue create electron-app
@@ -199,3 +203,77 @@ npm run electron:serve
 ```
 
 electron主进程的代码放在了**background.js**
+```javascript
+// vue.config.js
+module.exports = {
+  pluginOptions: {
+    electronBuilder: {
+      builderOptions: {
+        // options placed here will be merged with default configuration and passed to electron-builder
+      }
+    }
+  }
+}
+```
+
+## 注意
+### 图标配置失效
+win图标最小为256*256
+mac图标最小为512*512
+electron-builder要求icon需要放到buildResources目录中（默认为build）中，也就是dist目录
+
+
+### M1 Exit code: ENOENT. spawn /usr/bin/python ENOENT
+原因
+  builder-util正在尝试调用 python，因为该包dmg-builder使用 
+  python 脚本您可以设置环境变量PYTHON_PATH以覆盖默认值/usr/bin/python，但是：
+  dmg-builder使用仅在 Python 2 中内置的reload模块
+
+方法一
+安装python 2.7，并获取安装路径（例如：/XXX/versions/2.7/bin/python）；
+打开“YourProjectPath/node_modules/dmg-builder/out/dmg.js”，找到“/usr/bin/python”，替换为“/XXX/versions/2.7/bin/python”
+
+方法二
+1. 场景1 不使用vue-cli-plugin-electron-builder
+- 可以直接升级electron-builder@23.0.3
+
+2. 场景2 使用vue-cli-plugin-electron-builder 
+内部的electron-builder版本依旧很低
+- 可以通过yarn [选择性依赖](https://classic.yarnpkg.com/lang/en/docs/selective-version-resolutions/) / 或者npm overrides 解决方案
+::: tip
+为什么需要选择性依赖？
+可能依赖于一个不经常更新的包，而这又依赖于另一个获得重要升级的包
+:::
+
+```javascript
+// 如果你使用 yarn，安装 python2.7.18 并修复 python 的路径后，
+// 你可以在 package.json 中添加这段代码来修复它
+"dependencies": {
+....
+}
+"devDependencies": {
+...
+}
+"resolutions" : {
+  "vue-cli-plugin-electron-builder/electron-builder": "^23.0.3"
+}
+```
+```javascript
+如果你是用npm
+npm >= v8
+{
+  "devDependencies": {
+    "vue-cli-plugin-electron-builder": "^2.1.1"
+  },
+  "overrides": {
+    "vue-cli-plugin-electron-builder": {
+      "electron-builder": "^23.0.3"
+    }
+  }
+}
+
+rm -rf node_modules
+rm package-lock.json
+npm install
+
+```
