@@ -217,11 +217,11 @@ module.exports = {
 ```
 
 ## 注意
-### 图标配置失效
+### 打包因图标太小报错
+报错 ```ERR_ICON_TOO_SMALL```
 win图标最小为256*256
 mac图标最小为512*512
 electron-builder要求icon需要放到buildResources目录中（默认为build）中，也就是dist目录
-
 
 ### M1 Exit code: ENOENT. spawn /usr/bin/python ENOENT
 原因
@@ -276,4 +276,118 @@ rm -rf node_modules
 rm package-lock.json
 npm install
 
+```
+
+### Error: error:0308010C:digital envelope routines::unsupported
+```javascript
+// nodejs v17+
+⠋  Bundling main process...node:internal/crypto/hash:67
+  this[kHandle] = new _Hash(algorithm, xofLen);
+                  ^
+
+Error: error:0308010C:digital envelope routines::unsupported
+  at module.exports (/Users/zhangfuling/Desktop/project/electron-app/node_modules/vue-cli-plugin-electron-builder/node_modules/webpack/lib/util/createHash.js:135:53)
+
+```
+1. 原因
+- nodejs 17+支持OpenSSL3.0 MD4这样的算法已经被降级了
+- webpack使用crypto.createHash()模块的方法创建哈希。这个方法只能使用当前node版本对应的OpenSSL版本可用和支持的算法创建哈希。
+[webpack源码](https://github.com/webpack/webpack/blob/main/lib/util/createHash.js)
+
+```javascript
+/**
+ * Creates a hash by name or function
+ * @param {string | typeof Hash} algorithm the algorithm name or a constructor creating a hash
+ * @returns {Hash} the hash
+ */
+module.exports = algorithm => {
+  if (typeof algorithm === "function") {
+    return new BulkUpdateDecorator(() => new algorithm());
+  }
+  switch (algorithm) {
+    // TODO add non-cryptographic algorithm here
+    case "debug":
+      return new DebugHash();
+    case "xxhash64":
+      if (createXXHash64 === undefined) {
+        createXXHash64 = require("./hash/xxhash64");
+        if (BatchedHash === undefined) {
+          BatchedHash = require("./hash/BatchedHash");
+        }
+      }
+      return new BatchedHash(createXXHash64());
+    case "md4":
+      if (createMd4 === undefined) {
+        createMd4 = require("./hash/md4");
+        if (BatchedHash === undefined) {
+          BatchedHash = require("./hash/BatchedHash");
+        }
+      }
+      return new BatchedHash(createMd4());
+    case "native-md4":
+      if (crypto === undefined) crypto = require("crypto");
+      return new BulkUpdateDecorator(() => crypto.createHash("md4"), "md4");
+    default:
+      if (crypto === undefined) crypto = require("crypto");
+      return new BulkUpdateDecorator(
+        () => crypto.createHash(algorithm),
+        algorithm
+      );
+  }
+};
+
+```
+
+2. 解决方法
+- nodejs降级到16或者更低版本
+- 将--openssl-legacy-provider传递给webpack或者基于webpack的cli工具
+- 设置环境变量 NODE_OPTIONS
+::: tip
+--openssl-legacy-provider 这个标志可以告诉node恢复到openssl3.0的旧提供程序，
+允许webpack使用md4这种传统加密算法
+:::
+```javascript
+// macos Unix
+"scripts": {
+    "serve": "export NODE_OPTIONS=--openssl-legacy-provider && vue-cli-service serve",
+    "build": "export NODE_OPTIONS=--openssl-legacy-provider && vue-cli-service build",
+    "lint": "export NODE_OPTIONS=--openssl-legacy-provider && vue-cli-service lint"
+},
+// windows
+"scripts": {
+    "serve": "set NODE_OPTIONS=--openssl-legacy-provider && vue-cli-service serve",
+    "build": "set NODE_OPTIONS=--openssl-legacy-provider && vue-cli-service build",
+    "lint": "set NODE_OPTIONS=--openssl-legacy-provider && vue-cli-service lint"
+},
+```
+
+
+
+###  part download request failed with status code 401
+在macos上打包exe
+```javascript
+  • downloading     url=https://github.com/electron-userland/electron-builder-binaries/releases/download/winCodeSign-2.6.0/winCodeSign-2.6.0.7z size=5.6 MB parts=1
+  • retrying        attempt=1
+  • retrying        attempt=2
+  • retrying        attempt=3
+  ⨯ part download request failed with status code 401
+github.com/develar/app-builder/pkg/download.(*Part).doRequest
+	/Volumes/data/Documents/app-builder/pkg/download/Part.go:126
+github.com/develar/app-builder/pkg/download.(*Part).download
+	/Volumes/data/Documents/app-builder/pkg/download/Part.go:67
+github.com/develar/app-builder/pkg/download.(*Downloader).DownloadResolved.func1.1
+	/Volumes/data/Documents/app-builder/pkg/download/downloader.go:155
+github.com/develar/app-builder/pkg/util.MapAsyncConcurrency.func2
+	/Volumes/data/Documents/app-builder/pkg/util/async.go:68
+runtime.goexit
+	/usr/local/Cellar/go/1.17/libexec/src/runtime/asm_arm64.s:1133
+```
+原因
+网络问题 在macos上打包exe 包体积太大 
+解决方案
+```
+cat .npmrc
+registry=https://registry.npm.taobao.org/
+electron-builder-binaries_mirror=https://registry.npmmirror.com/-/binary/electron-builder-binaries/
+electron-mirror=http://npm.taobao.org/mirrors/electron/
 ```
