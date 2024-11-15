@@ -514,8 +514,6 @@ console.log(html);
 
 ### 什么是虚拟 DOM？Vue 中如何实现一个虚拟 DOM？说说你的思路
 
-[什么是虚拟 DOM？](./VDOM.md)
-
 ### 你了解 Vue 的 diff 算法吗？
 
 ### 你知道 nextTick 的原理吗？

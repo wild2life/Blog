@@ -2,11 +2,11 @@
 import { useData, inBrowser } from 'vitepress'
 import DefaultTheme from 'vitepress/theme'
 import { nextTick, provide } from 'vue'
-// import Giscus from '@giscus/vue'
+import Giscus from '@giscus/vue'
 
 import { usePageId } from '../composables'
 
-// import MNavVisitor from './MNavVisitor.vue'
+import MNavVisitor from './MNavVisitor.vue'
 import MDocFooter from './MDocFooter.vue'
 
 const { Layout } = DefaultTheme

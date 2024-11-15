@@ -65,12 +65,12 @@ export default defineConfig({
 
     /*** 自定义配置 ***/
     visitor: {
-      badgeId: 'maomao1996.vitepress-nav-template',
+      badgeId: 'wild2life.Blog',
     },
 
     comment: {
       repo: 'wild2life/Blog',
-      repoId: 'R_kgDOJC09Jg',
+      repoId: 'R_kgDOJA9Fow',
       category: 'Announcements',
       categoryId: 'DIC_kwDOJC09Js4Cekn0',
     },
