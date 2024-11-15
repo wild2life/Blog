@@ -72,8 +72,13 @@ export default defineConfig({
       repo: 'wild2life/Blog',
       repoId: 'R_kgDOJA9Fow',
       category: 'Announcements',
-      categoryId: 'DIC_kwDOJC09Js4Cekn0',
+      categoryId: 'DIC_kwDOJA9Fo84CkSp6',
     },
+  },
+
+  /* 生成站点地图 */
+  sitemap: {
+    hostname: 'https://wild2life.github.io/Blog/',
   },
 
   vite: {

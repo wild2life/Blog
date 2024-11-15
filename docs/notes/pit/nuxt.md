@@ -1,8 +1,14 @@
-##### 面向 c 端的项目一定要做 ssr
+---
+outline: 2
+---
+
+# 面向 c 端的项目一定要做 ssr
 
 ### 传统的 vue 纯浏览器渲染
 
-npm run build 打包 把打包的东西放到服务器上 整个的生成是通过在**浏览器执行 js **
+```js
+npm run build
+# 打包 把打包的东西放到服务器上 整个的生成是通过在**浏览器执行 js **
 ![image.png](https://cdn.nlark.com/yuque/0/2021/png/292785/1636943800402-17b66feb-fd06-4d1a-8ef0-304733271d6c.png#clientId=u85b1f32b-b9e4-4&from=paste&height=1116&id=ud5687010&name=image.png&originHeight=1116&originWidth=2208&originalType=binary&ratio=1&rotation=0&showTitle=false&size=424226&status=done&style=none&taskId=ueab5097e-b425-4a3f-ab11-a920fd8b1fa&title=&width=2208)
 
 ### ssr 服务端渲染
@@ -27,7 +33,7 @@ npm run build 打包 把打包的东西放到服务器上 整个的生成是通�
 
 #### 2. router src/router/index.js
 
-##### ⚠️ 路由只能是 history 模式
+##### 路由只能是 history 模式
 
 ![image.png](https://cdn.nlark.com/yuque/0/2021/png/292785/1636947137537-bdf1db66-d02b-4772-8d71-fd4253206f2e.png#clientId=u53b04b67-98b8-4&from=paste&height=703&id=ub53f80e4&name=image.png&originHeight=972&originWidth=906&originalType=binary&ratio=1&rotation=0&showTitle=false&size=532522&status=done&style=none&taskId=u5679f3e9-2fe3-4622-8d66-f3f635e84f0&title=&width=655)
 
@@ -135,3 +141,7 @@ sass-loader > 10 不支持 vue2.0
 [https://stackoverflow.com/questions/46058544/document-is-not-defined-in-nuxt-js](https://stackoverflow.com/questions/46058544/document-is-not-defined-in-nuxt-js)
 ![image.png](https://cdn.nlark.com/yuque/0/2022/png/292785/1650453007623-4c33d334-7bca-4e84-a17e-623bc36c025a.png#clientId=u75d33a12-5762-4&from=paste&height=1314&id=ub5da26aa&name=image.png&originHeight=1314&originWidth=1612&originalType=binary&ratio=1&rotation=0&showTitle=false&size=587069&status=done&style=none&taskId=ud3975e5e-6f81-49ad-9442-e2e7838f646&title=&width=1612)
 ![image.png](https://cdn.nlark.com/yuque/0/2022/png/292785/1647318629137-171ec8a4-f4cd-472a-a6a7-14e475a90a39.png#clientId=uc84be5f8-8167-4&from=paste&height=387&id=uf5c63ff9&name=image.png&originHeight=774&originWidth=1214&originalType=binary&ratio=1&rotation=0&showTitle=false&size=285316&status=done&style=none&taskId=uc8800df3-081b-4b60-b2c8-518144c4d02&title=&width=607)
+
+
+
+```
